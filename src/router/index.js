@@ -56,6 +56,18 @@ export const constantRoutes = [
   },
 
   {
+    path: '/singleCrowd',
+    component: Layout,
+    redirect: '/singleCrowd',
+    children: [{
+      path: 'singleCrowd',
+      name: 'singleCrowd',
+      component: () => import('@/views/singleCrowd/index'),
+      meta: { title: 'singleCrowd', icon: 'dashboard' }
+    }]
+  },
+
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',
