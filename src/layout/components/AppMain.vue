@@ -7,6 +7,8 @@
 </template>
 
 <script>
+// 导入钱包按钮
+
 export default {
   name: 'AppMain',
   computed: {
