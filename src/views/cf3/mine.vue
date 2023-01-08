@@ -97,7 +97,7 @@ export default {
         myRecords() {
             // 查询个人的捐款记录和参与的众筹活动
             // 合约接口: function myRecords() external view returns (JoinRecord[] memory, uint[] memory);
-            this.wallet.methods.myRecords().call().then((res) => {
+            this.wallet.cf3.methods.myRecords().call().then((res) => {
                 console.log("myRecords: ", res)
                 this.myJoins = res[0]
                 this.myActivityIDs = res[1]
