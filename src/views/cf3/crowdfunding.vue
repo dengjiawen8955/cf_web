@@ -8,15 +8,14 @@
         <!-- 发起众筹活动对话框 -->
         <el-dialog title="发起众筹活动" :visible.sync="isCreateActivity" width="30%">
             <el-form label-width="80px">
-                <el-form-item label="活动信息数据">
+                <el-form-item label="活动信息">
                     <el-input v-model="activityData"></el-input>
                 </el-form-item>
                 <el-form-item label="目标金额">
                     <el-input v-model="targetMoney"></el-input>
                 </el-form-item>
-                <el-form-item label="截止时间">
-                    <el-date-picker v-model="deadline" type="datetime" placeholder="选择日期时间">
-                    </el-date-picker>
+                <el-form-item label="活动天数">
+                    <el-input v-model="activityDays"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -223,9 +222,9 @@ struct Activity {
                 limit: 10,
                 total: 100,
             },
-            activityData: '',
-            targetMoney: 0,
-            deadline: '',
+            activityData: '活动1',
+            activityDays: 1,
+            targetMoney: 100,
             wallet: this.$root.WALLET,
             isCreateActivity: false
         }
@@ -260,7 +259,7 @@ struct Activity {
             }
             // 合约: function join(uint id, string memory comment) external payable;
             // 调用 join 合约支付 donationAmount wei, 传入 donationComment
-            this.wallet.cf3.methods.join(this.activity.id, this.donationComment).send({
+            this.wallet.cf3.methods.readerJoin(this.activity.id, this.donationComment).send({
                 from: this.wallet.address,
                 value: this.donationAmount
             }).then((ret) => {
@@ -329,11 +328,46 @@ struct Activity {
         },
         // 发起众筹活动
         createActivity() {
-            // 1. 获取用户输入的数据
-            // 2. 调用合约的createActivity方法
-            // 3. 关闭对话框
             this.isCreateActivity = false
             console.log(this.activityData, this.targetMoney, this.deadline)
+            if (this.activityData == '') {
+                this.$message({
+                    type: 'error',
+                    message: '请输入活动标题'
+                });
+                return
+            }
+            if (this.targetMoney <= 0) {
+                this.$message({
+                    type: 'error',
+                    message: '目标金额必须大于0'
+                });
+                return
+            }
+            if (this.activityDays <= 0) {
+                this.$message({
+                    type: 'error',
+                    message: '活动天数必须大于0'
+                });
+                return
+            }
+
+            this.wallet.cf3.methods.createActivity(this.targetMoney, this.activityDays, this.activityData).send({
+                from: this.wallet.address,
+            }).then((ret) => {
+                console.log("createActivity ret: ", ret)
+                this.$message({
+                    type: 'success',
+                    message: '发起众筹活动成功'
+                });
+                this.getList()
+            }).catch((err) => {
+                console.log("createActivity err: ", err)
+                this.$message({
+                    type: 'error',
+                    message: '发起众筹活动失败'
+                });
+            })
         }
     }
 }

@@ -63,7 +63,7 @@ export const constantRoutes = [
       path: 'wallet',
       name: 'wallet',
       component: () => import('@/views/cf3/wallet'),
-      meta: { title: 'wallet', icon: 'dashboard' }
+      meta: { title: '钱包', icon: 'wallet_gray' }
     }]
   },
 
@@ -75,7 +75,19 @@ export const constantRoutes = [
       path: 'crowdfunding',
       name: 'crowdfunding',
       component: () => import('@/views/cf3/crowdfunding'),
-      meta: { title: 'crowdfunding', icon: 'dashboard' }
+      meta: { title: '众筹', icon: 'crowdfunding_gray' }
+    }]
+  },
+
+  {
+    path: '/mine',
+    component: Layout,
+    redirect: '/mine',
+    children: [{
+      path: 'mine',
+      name: 'mine',
+      component: () => import('@/views/cf3/mine'),
+      meta: { title: '我的', icon: 'mine_gray' }
     }]
   },
 
