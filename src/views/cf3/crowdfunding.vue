@@ -1,9 +1,11 @@
 <template>
     <div class="container">
         <!-- 发起众筹活动按钮 -->
-        <el-button type="primary" @click="isCreateActivity = true" style="margin: 2%; ">发起众筹活动</el-button>
-        <!-- 刷新 -->
-        <el-button type="primary" @click="getList" style="margin: 2%; ">刷新</el-button>
+        <el-button type="success" @click="isCreateActivity = true" style="margin: 1%; ">发起众筹活动</el-button>
+
+        <!-- 输入id搜索 -->
+        <el-input v-model="searchIDs" placeholder="输入id搜索多个id用逗号,隔开" style="margin: 1%; width: 20%;"></el-input>
+        <el-button type="primary" @click="getListByIDs()">搜索</el-button>
 
         <!-- 发起众筹活动对话框 -->
         <el-dialog title="发起众筹活动" :visible.sync="isCreateActivity" width="30%">
@@ -24,7 +26,7 @@
             </span>
         </el-dialog>
         <!-- 众筹活动列表 -->
-        <!-- 表格内容: id, 题目,  当前金额, 目标金额, 截止时间时间, 状态, 操作(查看) -->
+        <!-- 表格内容: id, 题目,  当前金额, 目标金额, 截止时间时间, 状态, 操作(查看)-->
         <el-table :data="getActivitiesRet" border fit highlight-current-row style="width: 100%;">
             <el-table-column label="ID" prop="id" align="center" width="auto">
                 <template slot-scope="{row}">
@@ -68,6 +70,7 @@
 
         <!-- 众筹活动详情对话框 -->
         <!-- id, 题目, 当前金额, 目标金额, 截止时间时间, 状态, 受益人address, 捐赠记录,  捐赠金额(输入框), 捐赠按钮-->
+        <!-- 作者提取资金按钮 -->
         <el-dialog title="众筹活动详情" :visible.sync="isViewActivity" width="30%">
             <el-form label-width="80px">
                 <el-form-item label="ID">
@@ -94,7 +97,8 @@
 
                 <!-- 捐赠记录 joinRecords: id, activityID, joiner, tsStr, amount, comment -->
                 <el-form-item label="捐赠记录">
-                    <el-table :data="activity.joinRecords" border fit highlight-current-row height="250" style="width: 100%;">
+                    <el-table :data="activity.joinRecords" border fit highlight-current-row height="250"
+                        style="width: 100%;">
                         <el-table-column label="ID" prop="id" align="center" width="auto">
                             <template slot-scope="{row}">
                                 <span>{{ row.id }}</span>
@@ -125,6 +129,12 @@
                                 <span>{{ row.comment }}</span>
                             </template>
                         </el-table-column>
+                        <!-- 退回按钮 -->
+                        <el-table-column label="操作" fixed="right" width="auto">
+                            <template slot-scope="{row}">
+                                <el-button type="text" @click="handleReaderWithdraw(row)">退回</el-button>
+                            </template>
+                        </el-table-column>
                     </el-table>
                 </el-form-item>
 
@@ -140,6 +150,8 @@
             <span slot="footer" class="dialog-footer">
                 <el-button @click="isViewActivity = false">取 消</el-button>
                 <el-button type="primary" @click="handleDonation">捐 赠</el-button>
+                <!-- 仅仅在可以提取的时候展示: 作者提取按钮-->
+                <el-button v-if="isAbleAuthorWithdraw(activity)" type="success" @click="handleAuthorWithdraw(activity)">提 取</el-button>
             </span>
         </el-dialog>
     </div>
@@ -170,30 +182,16 @@ export default {
             return
         }
         console.log("balance: ", this.$root.WALLET.balance)
-
         this.getTotal()
-
     },
     data() {
         return {
-            /*
-struct Activity {
-    uint id;
-    address beneficiary;      // 发起人, 受益人
-    string data;              // 直接标题描述或者数据hash
-    uint targetMoney;         // 目标金额, wei
-    uint currentMoney;        // 当前金额, wei
-    uint endTime;             // 截止时间
-    bool closed;              // 是否关闭
-    uint joinRecordID;        // 捐款记录id  
-    JoinRecord[] joinRecords; // 捐款记录
-}
-            */
+            searchIDs: '',
             getActivitiesRet: [
                 {
                     id: 1,
                     beneficiary: '0x1234567890',
-                    data: '众筹活动1',
+                    data: 'Demo数据请点击搜索刷新',
                     targetMoney: 1000,
                     currentMoney: 100,
                     endTime: 1577836800,
@@ -230,6 +228,62 @@ struct Activity {
         }
     },
     methods: {
+        handleReaderWithdraw(row) {
+            console.log("handleReaderWithdraw")
+            let recordID = row.id
+            let activityID = row.activityID
+            // 调用合约的 withdraw
+            this.wallet.cf3.methods.readerWithdraw(activityID, recordID).send({ from: this.wallet.address }).then((ret) => {
+                console.log("withdraw ret: ", ret)
+                this.$message({
+                    type: 'success',
+                    message: '退款成功'
+                });
+            }).catch((err) => {
+                console.log("withdraw err: ", err)
+                this.$message({
+                    type: 'error',
+                    message: '退款失败' 
+                });
+            })
+        },
+        handleAuthorWithdraw(row) {
+            console.log("handleAuthorWithdraw")
+            // 调用合约的 withdraw
+            this.wallet.cf3.methods.authorWithdraw(row.id).send({ from: this.wallet.address }).then((ret) => {
+                console.log("withdraw ret: ", ret)
+                this.$message({
+                    type: 'success',
+                    message: '提取成功'
+                });
+            }).catch((err) => {
+                console.log("withdraw err: ", err)
+                this.$message({
+                    type: 'error',
+                    message: '提取失败' 
+                });
+            })
+        },
+        // 作者是否可以提现
+        isAbleAuthorWithdraw(row) {
+            console.log("isAbleAuthorWithdraw")
+            return true
+            // 只有活动结束, 且活动金额达到目标金额, 且 !row.closed
+            // return row.endTime < (Date.now() / 1000) && row.currentMoney >= row.targetMoney && !row.closed
+        },
+        getListByIDs() {        
+            console.log("getListByIDs")
+            // 将 searchIDs 转换为数组
+            let ids = this.searchIDs.split(',')
+            // 字符串转数字
+            ids = ids.map(id => parseInt(id))
+            // 调用合约的 getActivitiesByIDs
+            if (ids.length === 0 || this.searchIDs === '') {
+                this.getList()
+            } else {
+                this.getActivities(ids)
+            }
+        },
         formatTime(ts) {
             return new Date(ts * 1000).toLocaleString({ hour12: false })
         },
@@ -237,16 +291,21 @@ struct Activity {
             return dataStr
         },
         getStatus(row) {
-            if (row.closed) {
-                return "已关闭"
+            // 时间没到: 进行中
+            // 时间到了, 金额没到: 众筹失败
+            // 时间到了, 金额到了: 待收款
+            // 时间到了, 金额到了, 已经收款: 已完成
+            if (row.endTime > Date.now() / 1000) {
+                return '进行中'
+            } else if (row.endTime <= Date.now() / 1000 && row.currentMoney < row.targetMoney) {
+                return '众筹失败'
+            } else if (row.endTime <= Date.now() / 1000 && row.currentMoney >= row.targetMoney && row.closed === false) {
+                return '待收款'
+            } else if (row.endTime <= Date.now() / 1000 && row.currentMoney >= row.targetMoney && row.closed === true) {
+                return '已完成'
             }
-            if (row.currentMoney >= row.targetMoney) {
-                return "已完成"
-            }
-            if (row.endTime < Date.now() / 1000) {
-                return "已过期"
-            }
-            return "进行中"
+
+            return '未知'
         },
         handleDonation() {
             console.log("handleDonation")
@@ -316,6 +375,8 @@ struct Activity {
             try {
                 this.wallet.cf3.methods.getActivities(arr).call().then((res) => {
                     console.log("getActivities: ", res)
+                    // 过滤出 id = 0 的活动
+                    res = res.filter(item => item.id != 0)
                     this.getActivitiesRet = res
                 })
             } catch (e) {
