@@ -12,7 +12,7 @@
                     <el-input v-model="activityData"></el-input>
                 </el-form-item>
                 <el-form-item label="目标金额">
-                    <el-input v-model="targetAmount"></el-input>
+                    <el-input v-model="targetMoney"></el-input>
                 </el-form-item>
                 <el-form-item label="截止时间">
                     <el-date-picker v-model="deadline" type="datetime" placeholder="选择日期时间">
@@ -26,7 +26,7 @@
         </el-dialog>
         <!-- 众筹活动列表 -->
         <!-- 表格内容: id, 题目,  当前金额, 目标金额, 截止时间时间, 状态, 操作(查看) -->
-        <el-table :data="tableData.activities" border fit highlight-current-row style="width: 100%;">
+        <el-table :data="getActivitiesRet" border fit highlight-current-row style="width: 100%;">
             <el-table-column label="ID" prop="id" align="center" width="auto">
                 <template slot-scope="{row}">
                     <span>{{ row.id }}</span>
@@ -34,27 +34,27 @@
             </el-table-column>
             <el-table-column label="题目" prop="title" align="center" width="auto">
                 <template slot-scope="{row}">
-                    <span>{{ row.title }}</span>
+                    <span>{{ getTitle(row.data) }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="当前金额" prop="currentAmount" align="center" width="auto">
+            <el-table-column label="当前金额" prop="currentMoney" align="center" width="auto">
                 <template slot-scope="{row}">
-                    <span>{{ row.currentAmount }}</span>
+                    <span>{{ row.currentMoney }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="目标金额" prop="targetAmount" align="center" width="auto">
+            <el-table-column label="目标金额" prop="targetMoney" align="center" width="auto">
                 <template slot-scope="{row}">
-                    <span>{{ row.targetAmount }}</span>
+                    <span>{{ row.targetMoney }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="截止时间" prop="deadline" align="center" width="auto">
                 <template slot-scope="{row}">
-                    <span>{{ row.deadline }}</span>
+                    <span>{{ formatTime(row.endTime) }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="状态" prop="status" align="center" width="auto">
                 <template slot-scope="{row}">
-                    <span>{{ row.status }}</span>
+                    <span>{{ getStatus(row) }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="auto">
@@ -68,32 +68,74 @@
             :limit.sync="tableData.limit" @pagination="getList" />
 
         <!-- 众筹活动详情对话框 -->
-        <!-- id, 题目, 当前金额, 目标金额, 截止时间时间, 状态, 受益人address, 捐赠金额(输入框), 捐赠按钮-->
+        <!-- id, 题目, 当前金额, 目标金额, 截止时间时间, 状态, 受益人address, 捐赠记录,  捐赠金额(输入框), 捐赠按钮-->
         <el-dialog title="众筹活动详情" :visible.sync="isViewActivity" width="30%">
             <el-form label-width="80px">
                 <el-form-item label="ID">
                     {{ activity.id }}
                 </el-form-item>
                 <el-form-item label="题目">
-                    {{ activity.title }}
+                    {{ getTitle(activity.data) }}
                 </el-form-item>
                 <el-form-item label="当前金额">
-                    {{ activity.currentAmount }}
+                    {{ activity.currentMoney }}
                 </el-form-item>
                 <el-form-item label="目标金额">
-                    {{ activity.targetAmount }}
+                    {{ activity.targetMoney }}
                 </el-form-item>
                 <el-form-item label="截止时间">
-                    {{ activity.deadline }}
+                    {{ formatTime(activity.endTime) }}
                 </el-form-item>
                 <el-form-item label="状态">
-                    {{ activity.status }}
+                    {{ getStatus(activity) }}
                 </el-form-item>
                 <el-form-item label="受益人">
                     {{ activity.beneficiary }}
                 </el-form-item>
+
+                <!-- 捐赠记录 joinRecords: id, activityID, joiner, tsStr, amount, comment -->
+                <el-form-item label="捐赠记录">
+                    <el-table :data="activity.joinRecords" border fit highlight-current-row height="250" style="width: 100%;">
+                        <el-table-column label="ID" prop="id" align="center" width="auto">
+                            <template slot-scope="{row}">
+                                <span>{{ row.id }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="活动ID" prop="activityID" align="center" width="auto">
+                            <template slot-scope="{row}">
+                                <span>{{ row.activityID }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="捐赠人" prop="joiner" align="center" width="auto">
+                            <template slot-scope="{row}">
+                                <span>{{ row.joiner }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="捐赠时间" prop="ts" align="center" width="auto">
+                            <template slot-scope="{row}">
+                                <span>{{ formatTime(row.ts) }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="捐赠金额" prop="amount" align="center" width="auto">
+                            <template slot-scope="{row}">
+                                <span>{{ row.amount }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="备注" prop="comment" align="center" width="auto">
+                            <template slot-scope="{row}">
+                                <span>{{ row.comment }}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-form-item>
+
+
                 <el-form-item label="捐赠金额">
                     <el-input v-model="donationAmount"></el-input>
+                </el-form-item>
+
+                <el-form-item label="捐赠备注">
+                    <el-input v-model="donationComment"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -172,44 +214,41 @@ struct Activity {
             ],
             isViewActivity: false,
             donationAmount: 0,
-            activity: {
-                id: 0,
-                title: '',
-                currentAmount: 0,
-                targetAmount: 0,
-                deadline: '',
-                status: '',
-                beneficiary: ''
-            }, // 众筹活动详情
+            donationComment: '',
+            activity: {}, // 众筹活动详情
             tableData: {
                 tableKey: 0,
-                activities: [   // 众筹活动列表
-                    // demo 数据
-                    {
-                        id: 1,
-                        title: '众筹活动1',
-                        currentAmount: 100,
-                        targetAmount: 1000,
-                        deadline: '2020-01-01',
-                        status: '进行中',
-                        closed: false,
-
-                        beneficiary: '0x1234567890'
-                    },
-                ],
                 listLoading: true,
                 page: 1,
                 limit: 10,
                 total: 100,
             },
             activityData: '',
-            targetAmount: 0,
+            targetMoney: 0,
             deadline: '',
             wallet: this.$root.WALLET,
             isCreateActivity: false
         }
     },
     methods: {
+        formatTime(ts) {
+            return new Date(ts * 1000).toLocaleString({ hour12: false })
+        },
+        getTitle(dataStr) {
+            return dataStr
+        },
+        getStatus(row) {
+            if (row.closed) {
+                return "已关闭"
+            }
+            if (row.currentMoney >= row.targetMoney) {
+                return "已完成"
+            }
+            if (row.endTime < Date.now() / 1000) {
+                return "已过期"
+            }
+            return "进行中"
+        },
         handleDonation() {
             console.log("handleDonation")
             if (this.donationAmount <= 0) {
@@ -219,6 +258,27 @@ struct Activity {
                 });
                 return
             }
+            // 合约: function join(uint id, string memory comment) external payable;
+            // 调用 join 合约支付 donationAmount wei, 传入 donationComment
+            this.wallet.cf3.methods.join(this.activity.id, this.donationComment).send({
+                from: this.wallet.address,
+                value: this.donationAmount
+            }).then((ret) => {
+                console.log("join ret: ", ret)
+                this.$message({
+                    type: 'success',
+                    message: '捐赠成功'
+                });
+                this.isViewActivity = false
+                this.getList()
+            }).catch((err) => {
+                console.log("join err: ", err)
+                this.$message({
+                    type: 'error',
+                    message: '捐赠失败'
+                });
+            })
+
         },
         // 查看众筹活动详情
         viewActivity(id, row) {
@@ -241,7 +301,7 @@ struct Activity {
             }
             this.getActivities(arr)
         },
-        getTotal(){
+        getTotal() {
             console.log("getTotal")
             this.wallet.cf3.methods.activityID().call().then((res) => {
                 console.log("getTotal: ", res)
@@ -258,37 +318,6 @@ struct Activity {
                 this.wallet.cf3.methods.getActivities(arr).call().then((res) => {
                     console.log("getActivities: ", res)
                     this.getActivitiesRet = res
-                    this.tableData.activities = []
-                    for (let i = 0; i < res.length; i++) {
-                        let activity = res[i]
-                        let status = ''
-                        if (activity.closed) {
-                            status = '已结束'
-                        } else {
-                            let now = Math.floor(Date.now() / 1000)
-                            if (now > activity.endTime) {
-                                status = '已结束'
-                            } else {
-                                status = '进行中'
-                            }
-                        }
-
-                        // 将 endTime 秒戳转换为 yyyy-MM-dd HH:mm:ss 格式
-                        let dataStr = new Date(activity.endTime * 1000)
-                        dataStr = dataStr.toLocaleString('chinese', {hour12: false})
-
-                        this.tableData.activities.push({
-                            id: activity.id,
-                            title: activity.data,
-                            currentAmount: activity.currentMoney,
-                            targetAmount: activity.targetMoney,
-                            deadline: dataStr,
-                            status: status,
-                            closed: activity.closed,
-
-                            beneficiary: activity.beneficiary
-                        })
-                    }
                 })
             } catch (e) {
                 console.log("getActivities error: ", e)
@@ -304,7 +333,7 @@ struct Activity {
             // 2. 调用合约的createActivity方法
             // 3. 关闭对话框
             this.isCreateActivity = false
-            console.log(this.activityData, this.targetAmount, this.deadline)
+            console.log(this.activityData, this.targetMoney, this.deadline)
         }
     }
 }

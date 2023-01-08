@@ -21,7 +21,7 @@ export default {
         return {
             wallet: {
                 cf3: null,
-                cf3Address: '0xeAE0573bfF0aB9188bfbFD78c392BAC17046efdb',
+                cf3Address: '0x00a64066e2F7644e1F88DB1202009dFB554CF268',
                 address: '',
                 balance: 0,
                 web3: null,
