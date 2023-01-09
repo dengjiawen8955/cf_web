@@ -1,6 +1,6 @@
 # cf_web
 
-[English](./README.md) | 简体中文
+English | [简体中文](./README-zh.md)
 
 Crowdfunding system contract based on Ethereum (blockchain)
 
