@@ -35,7 +35,7 @@
             </el-tab-pane>
             <el-tab-pane label="我的创建" name="second">
                 <el-table :data="myActivityIDs" style="width: 100%">
-                    <el-table-column label="捐款活动id" prop="activityID" align="center" width="auto">
+                    <el-table-column label="我的创建活动id" prop="activityID" align="center" width="auto">
                         <template slot-scope="{row}">
                             <span>{{ row }}</span>
                         </template>
