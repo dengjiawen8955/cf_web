@@ -6,6 +6,7 @@
         <div v-if="wallet.isConnect">
             <p>钱包地址: {{ wallet.address }}</p>
             <p>钱包余额: {{ wallet.balance }} ETH</p>
+            <p>合约地址: {{ wallet.cf3Address }}</p>
         </div>
     </div>
 </template>

@@ -26,14 +26,14 @@
             </span>
         </el-dialog>
         <!-- 众筹活动列表 -->
-        <!-- 表格内容: id, 题目,  当前金额, 目标金额, 截止时间时间, 状态, 操作(查看)-->
+        <!-- 表格内容: id, 标题,  当前金额, 目标金额, 截止时间时间, 状态, 操作(查看)-->
         <el-table :data="getActivitiesRet" border fit highlight-current-row style="width: 100%;">
             <el-table-column label="ID" prop="id" align="center" width="auto">
                 <template slot-scope="{row}">
                     <span>{{ row.id }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="题目" prop="title" align="center" width="auto">
+            <el-table-column label="标题" prop="title" align="center" width="auto">
                 <template slot-scope="{row}">
                     <span>{{ getTitle(row.data) }}</span>
                 </template>
@@ -69,14 +69,14 @@
             :limit.sync="tableData.limit" @pagination="getList" />
 
         <!-- 众筹活动详情对话框 -->
-        <!-- id, 题目, 当前金额, 目标金额, 截止时间时间, 状态, 受益人address, 捐赠记录,  捐赠金额(输入框), 捐赠按钮-->
+        <!-- id, 标题, 当前金额, 目标金额, 截止时间时间, 状态, 受益人address, 捐赠记录,  捐赠金额(输入框), 捐赠按钮-->
         <!-- 作者提取资金按钮 -->
         <el-dialog title="众筹活动详情" :visible.sync="isViewActivity" width="30%">
             <el-form label-width="80px">
                 <el-form-item label="ID">
                     {{ activity.id }}
                 </el-form-item>
-                <el-form-item label="题目">
+                <el-form-item label="标题">
                     {{ getTitle(activity.data) }}
                 </el-form-item>
                 <el-form-item label="当前金额">
@@ -150,20 +150,44 @@
             <span slot="footer" class="dialog-footer">
                 <el-button @click="isViewActivity = false">取 消</el-button>
                 <el-button type="primary" @click="handleDonation">捐 赠</el-button>
+                <el-button type="primary" @click="isScanCode = true">扫码捐赠</el-button>
                 <!-- 仅仅在可以提取的时候展示: 作者提取按钮-->
                 <el-button v-if="isAbleAuthorWithdraw(activity)" type="success" @click="handleAuthorWithdraw(activity)">提 取</el-button>
             </span>
         </el-dialog>
+
+        <!-- 扫码捐赠的二维码 -->
+        <el-dialog title="扫码捐赠" :visible.sync="isScanCode" width="30%">
+            <!-- 标题 -->
+            <div style="text-align: center;">
+                <span>标题: {{ getTitle(activity.data) }}</span>
+            </div>
+            <!-- 提示 -->
+            <br>
+            <div style="text-align: center;">
+                <span>请使用钱包扫描二维码进行捐赠</span>
+            </div>
+            <br>
+            <div style="text-align: center;">
+                <vue-qr :logoSrc="imageUrl" :text="scanCodeUrl" :size="400"></vue-qr>
+            </div>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="isScanCode = false">取 消</el-button>
+            </span>
+        </el-dialog>
+
     </div>
-    <!-- 众筹活动详情 -->
 </template>
 
 <script>
 import Pagination from '@/components/Pagination/index.vue'
+import vueQr from 'vue-qr'
+
 
 export default {
     name: 'crowdfunding',
-    components: { Pagination },
+    components: { Pagination, vueQr },
     mounted() {
         // 如果钱包没有数据, 弹出提示去连接钱包, 点击确定跳转到钱包页面
         if (this.$root.WALLET === null || this.$root.WALLET === undefined) {
@@ -184,8 +208,16 @@ export default {
         console.log("balance: ", this.$root.WALLET.balance)
         this.getTotal()
     },
+    computed: {
+        // 以太坊扫码付款地址
+        scanCodeUrl() {
+            return `ethereum:${this.wallet.address}?value=${this.donationAmount}`
+        }
+    },
     data() {
         return {
+            imageUrl: require('@/assets/logo.png'),
+            isScanCode: false,
             searchIDs: '',
             getActivitiesRet: [
                 {
