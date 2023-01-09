@@ -1,14 +1,14 @@
 <template>
     <div class="container">
-        <!-- 发起众筹活动按钮 -->
-        <el-button type="success" @click="isCreateActivity = true" style="margin: 1%; ">发起众筹活动</el-button>
+        <!-- 发起募捐活动按钮 -->
+        <el-button type="success" @click="isCreateActivity = true" style="margin: 1%; ">发起募捐活动</el-button>
 
         <!-- 输入id搜索 -->
         <el-input v-model="searchIDs" placeholder="输入id搜索多个id用逗号,隔开" style="margin: 1%; width: 20%;"></el-input>
         <el-button type="primary" @click="getListByIDs()">搜索</el-button>
 
-        <!-- 发起众筹活动对话框 -->
-        <el-dialog title="发起众筹活动" :visible.sync="isCreateActivity" width="30%">
+        <!-- 发起募捐活动对话框 -->
+        <el-dialog title="发起募捐活动" :visible.sync="isCreateActivity" width="30%">
             <el-form label-width="80px">
                 <el-form-item label="活动信息">
                     <el-input v-model="activityData"></el-input>
@@ -25,7 +25,7 @@
                 <el-button type="primary" @click="createActivity">确 定</el-button>
             </span>
         </el-dialog>
-        <!-- 众筹活动列表 -->
+        <!-- 募捐活动列表 -->
         <!-- 表格内容: id, 标题,  当前金额, 目标金额, 截止时间时间, 状态, 操作(查看)-->
         <el-table :data="getActivitiesRet" border fit highlight-current-row style="width: 100%;">
             <el-table-column label="ID" prop="id" align="center" width="auto">
@@ -68,10 +68,10 @@
         <pagination v-show="tableData.total > 0" :total="tableData.total" :page.sync="tableData.page"
             :limit.sync="tableData.limit" @pagination="getList" />
 
-        <!-- 众筹活动详情对话框 -->
+        <!-- 募捐活动详情对话框 -->
         <!-- id, 标题, 当前金额, 目标金额, 截止时间时间, 状态, 受益人address, 捐赠记录,  捐赠金额(输入框), 捐赠按钮-->
         <!-- 作者提取资金按钮 -->
-        <el-dialog title="众筹活动详情" :visible.sync="isViewActivity" width="30%">
+        <el-dialog title="募捐活动详情" :visible.sync="isViewActivity" width="30%">
             <el-form label-width="80px">
                 <el-form-item label="ID">
                     {{ activity.id }}
@@ -244,7 +244,7 @@ export default {
             isViewActivity: false,
             donationAmount: 0,
             donationComment: '',
-            activity: {}, // 众筹活动详情
+            activity: {}, // 募捐活动详情
             tableData: {
                 tableKey: 0,
                 listLoading: true,
@@ -324,13 +324,13 @@ export default {
         },
         getStatus(row) {
             // 时间没到: 进行中
-            // 时间到了, 金额没到: 众筹失败
+            // 时间到了, 金额没到: 募捐失败
             // 时间到了, 金额到了: 待收款
             // 时间到了, 金额到了, 已经收款: 已完成
             if (row.endTime > Date.now() / 1000) {
                 return '进行中'
             } else if (row.endTime <= Date.now() / 1000 && row.currentMoney < row.targetMoney) {
-                return '众筹失败'
+                return '募捐失败'
             } else if (row.endTime <= Date.now() / 1000 && row.currentMoney >= row.targetMoney && row.closed === false) {
                 return '待收款'
             } else if (row.endTime <= Date.now() / 1000 && row.currentMoney >= row.targetMoney && row.closed === true) {
@@ -370,7 +370,7 @@ export default {
             })
 
         },
-        // 查看众筹活动详情
+        // 查看募捐活动详情
         viewActivity(id, row) {
             this.isViewActivity = true
             this.activity = row
@@ -400,7 +400,7 @@ export default {
                 this.tableData.total = res
             })
         },
-        // 批量查询众筹详情
+        // 批量查询募捐详情
         // solidity 方法: function getActivities(uint[] memory ids) external view returns (Activity[] memory);
         getActivities(arr) {
             console.log("arr: ", arr)
@@ -415,11 +415,11 @@ export default {
                 console.log("getActivities error: ", e)
                 this.$message({
                     type: 'error',
-                    message: '查询众筹活动失败'
+                    message: '查询募捐活动失败'
                 });
             }
         },
-        // 发起众筹活动
+        // 发起募捐活动
         createActivity() {
             this.isCreateActivity = false
             console.log(this.activityData, this.targetMoney, this.deadline)
@@ -451,14 +451,14 @@ export default {
                 console.log("createActivity ret: ", ret)
                 this.$message({
                     type: 'success',
-                    message: '发起众筹活动成功'
+                    message: '发起募捐活动成功'
                 });
                 this.getList()
             }).catch((err) => {
                 console.log("createActivity err: ", err)
                 this.$message({
                     type: 'error',
-                    message: '发起众筹活动失败'
+                    message: '发起募捐活动失败'
                 });
             })
         }

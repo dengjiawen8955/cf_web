@@ -75,7 +75,7 @@ export const constantRoutes = [
       path: 'crowdfunding',
       name: 'crowdfunding',
       component: () => import('@/views/cf3/crowdfunding'),
-      meta: { title: '众筹', icon: 'crowdfunding_gray' }
+      meta: { title: '募捐', icon: 'crowdfunding_gray' }
     }]
   },
 
