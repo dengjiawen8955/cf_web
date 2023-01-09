@@ -4,7 +4,7 @@ English | [简体中文](./README-zh.md)
 
 Crowdfunding system contract based on Ethereum (blockchain)
 
-* solidity 合约: <https://github.com/dengjiawen8955/cf_eth>
+* solidity contract: <https://github.com/dengjiawen8955/cf_eth>
 
 Related documents
 
