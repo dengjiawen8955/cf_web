@@ -4,10 +4,10 @@
 
     <breadcrumb class="breadcrumb-container" />
 
-    <div class="right-menu">
+    <!-- <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <img :src="avatar" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -27,7 +27,7 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -46,6 +46,11 @@ export default {
       'sidebar',
       'avatar'
     ])
+  },
+  data() {
+    return {
+      avatar: '../../assets/avatar.png'
+    }
   },
   methods: {
     toggleSideBar() {
