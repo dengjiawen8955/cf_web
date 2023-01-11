@@ -22,18 +22,18 @@ npm run dev
 
 ## Interface display
 
-![login](https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-0420230109185012.png)
+![login](images/2022-02-0420230109185012.png)
 
-![wallet](https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-0420230109185155.png)
+![wallet](images/2022-02-0420230109185155.png)
 
-![cf1](https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-0420230109185717.png)
+![cf1](images/2022-02-0420230109185717.png)
 
-![create_cf2](https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-0420230109185307.png)
+![create_cf2](images/2022-02-0420230109185307.png)
 
-![detail_cf3](https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-0420230109185435.png)
+![detail_cf3](images/2022-02-0420230109185435.png)
 
-![code_cf4](https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-0420230109185452.png)
+![code_cf4](images/2022-02-0420230109185452.png)
 
-![mine1](https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-0420230109185734.png)
+![mine1](images/2022-02-0420230109185734.png)
 
-![mine2](https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-0420230109185902.png)
+![mine2](images/2022-02-0420230109185902.png)
