@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      title: 'Vue Admin Template',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      title: '区块链慈善募捐',
+      logo: 'https://markdown-1304103443.cos.ap-guangzhou.myqcloud.com/2022-02-04红十字.png'
     }
   }
 }

@@ -4,8 +4,10 @@
 
     <breadcrumb class="breadcrumb-container" />
 
-    <!-- <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
+    <div class="right-menu">
+      <!-- 退出按钮 -->
+      <el-button type="error" @click="logout">退出</el-button>
+      <!-- <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar" class="user-avatar">
           <i class="el-icon-caret-bottom" />
@@ -26,8 +28,8 @@
             <span style="display:block;">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
-    </div> -->
+      </el-dropdown> -->
+    </div>
   </div>
 </template>
 
