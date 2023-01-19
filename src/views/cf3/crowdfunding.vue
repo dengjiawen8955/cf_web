@@ -130,11 +130,11 @@
                             </template>
                         </el-table-column>
                         <!-- 退回按钮 -->
-                        <el-table-column label="操作" fixed="right" width="auto">
+                        <!-- <el-table-column label="操作" fixed="right" width="auto">
                             <template slot-scope="{row}">
                                 <el-button type="text" @click="handleReaderWithdraw(row)">退回</el-button>
                             </template>
-                        </el-table-column>
+                        </el-table-column> -->
                     </el-table>
                 </el-form-item>
 
